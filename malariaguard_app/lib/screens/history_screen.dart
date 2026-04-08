@@ -28,7 +28,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
       appBar: AppBar(
         title: Text(
           "Patient History | የታካሚ ታሪክ",
-          style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white),
+          style: GoogleFonts.outfit(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
         backgroundColor: emeraldGreen,
         iconTheme: const IconThemeData(color: Colors.white),
@@ -37,15 +40,23 @@ class _HistoryScreenState extends State<HistoryScreen> {
         future: _historyFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator(color: emeraldGreen));
+            return const Center(
+              child: CircularProgressIndicator(color: emeraldGreen),
+            );
           } else if (snapshot.hasError) {
-            return Center(child: Text("Error loading history: ${snapshot.error}"));
+            return Center(
+              child: Text("Error loading history: ${snapshot.error}"),
+            );
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.history_outlined, size: 64, color: Colors.grey),
+                  const Icon(
+                    Icons.history_outlined,
+                    size: 64,
+                    color: Colors.grey,
+                  ),
                   const SizedBox(height: 16),
                   Text(
                     "No records found.",
@@ -79,9 +90,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   ],
                 ),
                 child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 8,
+                  ),
                   leading: CircleAvatar(
-                    backgroundColor: isEmergency ? Colors.red.withValues(alpha: 0.1) : emeraldGreen.withValues(alpha: 0.1),
+                    backgroundColor: isEmergency
+                        ? Colors.red.withValues(alpha: 0.1)
+                        : emeraldGreen.withValues(alpha: 0.1),
                     child: Icon(
                       isEmergency ? Icons.report_problem : Icons.medication,
                       color: isEmergency ? Colors.red : emeraldGreen,
@@ -89,18 +105,27 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   ),
                   title: Text(
                     record['patientName'] ?? "Unknown Patient",
-                    style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 16),
+                    style: GoogleFonts.outfit(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
                   ),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         "${record['rdtResult']} | ${record['weight']}kg",
-                        style: GoogleFonts.outfit(fontSize: 14, color: Colors.black54),
+                        style: GoogleFonts.outfit(
+                          fontSize: 14,
+                          color: Colors.black54,
+                        ),
                       ),
                       Text(
                         DateFormat('yyyy-MM-dd HH:mm').format(date),
-                        style: GoogleFonts.outfit(fontSize: 12, color: Colors.grey),
+                        style: GoogleFonts.outfit(
+                          fontSize: 12,
+                          color: Colors.grey,
+                        ),
                       ),
                     ],
                   ),

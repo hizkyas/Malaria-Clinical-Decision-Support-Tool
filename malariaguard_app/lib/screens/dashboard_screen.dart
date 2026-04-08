@@ -13,7 +13,8 @@ class DashboardScreen extends StatefulWidget {
   State<DashboardScreen> createState() => _DashboardScreenState();
 }
 
-class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProviderStateMixin {
+class _DashboardScreenState extends State<DashboardScreen>
+    with SingleTickerProviderStateMixin {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _weightController = TextEditingController();
   final DosageService _dosageService = DosageService();
@@ -29,7 +30,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
   bool _isLoading = false;
   bool _showResult = false;
   bool _isListening = false;
-  
+
   // Safety Checklist
   bool _isUnconscious = false;
   bool _isVomiting = false;
@@ -57,13 +58,13 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
       await _dosageService.init();
       await _tts.setLanguage("am-ET");
       await _tts.setSpeechRate(0.5);
-      
+
       // Check if Amharic voice is available
       dynamic isAvailable = await _tts.isLanguageAvailable("am-ET");
       if (isAvailable == null || isAvailable == false) {
         _showTtsFallbackDialog();
       }
-      
+
       if (mounted) setState(() {});
     } catch (e) {
       debugPrint("Service initialization error: $e");
@@ -80,10 +81,13 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
           "To enable the audio guide:\n\n"
           "1. Go to Settings > Accessibility\n"
           "2. Select Text-to-speech output\n"
-          "3. Install Voice Data for Amharic (Ethiopia)."
+          "3. Install Voice Data for Amharic (Ethiopia).",
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text("OK")),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("OK"),
+          ),
         ],
       ),
     );
@@ -96,7 +100,7 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
           onStatus: (val) => debugPrint('STT Status: $val'),
           onError: (val) => debugPrint('STT Error: $val'),
         );
-        
+
         if (available) {
           setState(() => _isListening = true);
           _speech.listen(
@@ -145,14 +149,17 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
       bool isEmergency = _isUnconscious || _isVomiting || _isConvulsions;
 
       if (isEmergency) {
-        finalResult = "# 🚨 REFER TO HOSPITAL IMMEDIATELY\n\n"
+        finalResult =
+            "# 🚨 REFER TO HOSPITAL IMMEDIATELY\n\n"
             "**Emergency Condition Detected:**\n"
             "The patient shows severe symptoms. Refer to the nearest hospital at once.\n\n"
             "**ክሊኒካዊ ማስጠንቀቂያ:**\n"
             "በሽተኛው አስቸኳይ እርዳታ ይፈልጋል። እባክዎን ወዲያውኑ ወደ ሆስፒታል ይላኩ።";
       } else {
         finalResult = await _dosageService.getDosageRecommendation(
-          name: _nameController.text.isEmpty ? "Anonymous" : _nameController.text,
+          name: _nameController.text.isEmpty
+              ? "Anonymous"
+              : _nameController.text,
           weight: weight,
           rdtResult: _rdtResult,
         );
@@ -164,14 +171,15 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
       });
 
       await _dbService.saveDiagnosis({
-        'patientName': _nameController.text.isEmpty ? "Anonymous" : _nameController.text,
+        'patientName': _nameController.text.isEmpty
+            ? "Anonymous"
+            : _nameController.text,
         'weight': weight,
         'rdtResult': _rdtResult,
         'dosage': finalResult,
         'isEmergency': isEmergency ? 1 : 0,
         'timestamp': DateTime.now().toIso8601String(),
       });
-
     } catch (e) {
       debugPrint("Calculation error: $e");
       setState(() {
@@ -187,7 +195,9 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
 
   void _playInstructions() async {
     try {
-      String plainText = _dosageMarkdown.replaceAll("#", "").replaceAll("*", "");
+      String plainText = _dosageMarkdown
+          .replaceAll("#", "")
+          .replaceAll("*", "");
       await _tts.speak(plainText);
     } catch (e) {
       debugPrint("TTS Playback error: $e");
@@ -209,10 +219,18 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
       appBar: AppBar(
         title: Row(
           children: [
-            Text("MalariaGuard", style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
+            Text(
+              "MalariaGuard",
+              style: GoogleFonts.outfit(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
             const SizedBox(width: 8),
             Tooltip(
-              message: isReady ? "Google AI Core Active: ${_dosageService.modelVersion}" : "AI Core Inactive (Manual Fallback)",
+              message: isReady
+                  ? "Google AI Core Active: ${_dosageService.modelVersion}"
+                  : "AI Core Inactive (Manual Fallback)",
               child: Container(
                 width: 10,
                 height: 10,
@@ -268,8 +286,15 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                   Expanded(
                     child: DropdownButtonFormField<String>(
                       initialValue: _rdtResult,
-                      decoration: _inputDecoration(Icons.biotech_outlined, emeraldGreen),
-                      items: ['Positive', 'Negative'].map((r) => DropdownMenuItem(value: r, child: Text(r))).toList(),
+                      decoration: _inputDecoration(
+                        Icons.biotech_outlined,
+                        emeraldGreen,
+                      ),
+                      items: ['Positive', 'Negative']
+                          .map(
+                            (r) => DropdownMenuItem(value: r, child: Text(r)),
+                          )
+                          .toList(),
                       onChanged: (v) => setState(() => _rdtResult = v!),
                     ),
                   ),
@@ -278,7 +303,9 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                     height: 56,
                     child: ElevatedButton(
                       onPressed: () async {
-                        final result = await Navigator.pushNamed(context, '/scan') as String?;
+                        final result =
+                            await Navigator.pushNamed(context, '/scan')
+                                as String?;
                         if (!mounted) return;
                         if (result != null && result != "Invalid") {
                           setState(() {
@@ -290,15 +317,24 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                           }
                         } else if (result == "Invalid") {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("Scan Failed: Could not detect lines. Please try again.")),
+                            const SnackBar(
+                              content: Text(
+                                "Scan Failed: Could not detect lines. Please try again.",
+                              ),
+                            ),
                           );
                         }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: emeraldGreen,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
-                      child: const Icon(Icons.qr_code_scanner, color: Colors.white),
+                      child: const Icon(
+                        Icons.qr_code_scanner,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ],
@@ -306,12 +342,30 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
 
               const SizedBox(height: 24),
 
-              Text("Safety Check | የደህንነት ፍተሻ (Danger Signs)", 
-                  style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.red)),
+              Text(
+                "Safety Check | የደህንነት ፍተሻ (Danger Signs)",
+                style: GoogleFonts.outfit(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.red,
+                ),
+              ),
               const SizedBox(height: 8),
-              _buildCheckbox("Unconscious | ራሱን የሳተ", _isUnconscious, (v) => setState(() => _isUnconscious = v!)),
-              _buildCheckbox("Vomiting | ማስመለስ", _isVomiting, (v) => setState(() => _isVomiting = v!)),
-              _buildCheckbox("Convulsions | መንቀጥቀጥ", _isConvulsions, (v) => setState(() => _isConvulsions = v!)),
+              _buildCheckbox(
+                "Unconscious | ራሱን የሳተ",
+                _isUnconscious,
+                (v) => setState(() => _isUnconscious = v!),
+              ),
+              _buildCheckbox(
+                "Vomiting | ማስመለስ",
+                _isVomiting,
+                (v) => setState(() => _isVomiting = v!),
+              ),
+              _buildCheckbox(
+                "Convulsions | መንቀጥቀጥ",
+                _isConvulsions,
+                (v) => setState(() => _isConvulsions = v!),
+              ),
 
               const SizedBox(height: 32),
 
@@ -322,18 +376,40 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                   onPressed: _isLoading ? null : _calculateDosage,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: emeraldGreen,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                   child: _isLoading
                       ? Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)),
+                            const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            ),
                             const SizedBox(width: 12),
-                            Text("Gemma is thinking...", style: GoogleFonts.outfit(fontSize: 16, color: Colors.white)),
+                            Text(
+                              "Gemma is thinking...",
+                              style: GoogleFonts.outfit(
+                                fontSize: 16,
+                                color: Colors.white,
+                              ),
+                            ),
                           ],
                         )
-                      : Text("Calculate | አስላ", style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+                      : Text(
+                          "Calculate | አስላ",
+                          style: GoogleFonts.outfit(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
                 ),
               ),
 
@@ -345,8 +421,15 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: emeraldGreen.withValues(alpha: 0.2)),
-                    boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)],
+                    border: Border.all(
+                      color: emeraldGreen.withValues(alpha: 0.2),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.05),
+                        blurRadius: 10,
+                      ),
+                    ],
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -354,12 +437,29 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text("Result | ውጤት", style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: emeraldGreen)),
-                          IconButton(icon: const Icon(Icons.volume_up, color: emeraldGreen), onPressed: _playInstructions),
+                          Text(
+                            "Result | ውጤት",
+                            style: GoogleFonts.outfit(
+                              fontWeight: FontWeight.bold,
+                              color: emeraldGreen,
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.volume_up,
+                              color: emeraldGreen,
+                            ),
+                            onPressed: _playInstructions,
+                          ),
                         ],
                       ),
                       const Divider(),
-                      MarkdownBody(data: _dosageMarkdown, styleSheet: MarkdownStyleSheet(p: GoogleFonts.outfit(fontSize: 15))),
+                      MarkdownBody(
+                        data: _dosageMarkdown,
+                        styleSheet: MarkdownStyleSheet(
+                          p: GoogleFonts.outfit(fontSize: 15),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -371,7 +471,14 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
   }
 
   Widget _buildLabel(String text, Color color) {
-    return Text(text, style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.bold, color: color));
+    return Text(
+      text,
+      style: GoogleFonts.outfit(
+        fontSize: 14,
+        fontWeight: FontWeight.bold,
+        color: color,
+      ),
+    );
   }
 
   Widget _buildInputField({
@@ -387,9 +494,14 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
       decoration: _inputDecoration(icon, const Color(0xFF008F6B)).copyWith(
         hintText: hint,
         suffixIcon: ScaleTransition(
-          scale: _isListening ? _pulseAnimation : const AlwaysStoppedAnimation(1.0),
+          scale: _isListening
+              ? _pulseAnimation
+              : const AlwaysStoppedAnimation(1.0),
           child: IconButton(
-            icon: Icon(_isListening ? Icons.mic : Icons.mic_none, color: _isListening ? Colors.red : Colors.grey),
+            icon: Icon(
+              _isListening ? Icons.mic : Icons.mic_none,
+              color: _isListening ? Colors.red : Colors.grey,
+            ),
             onPressed: onMicPressed,
           ),
         ),
@@ -402,12 +514,19 @@ class _DashboardScreenState extends State<DashboardScreen> with SingleTickerProv
       prefixIcon: Icon(icon, color: color),
       filled: true,
       fillColor: Colors.white,
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide.none,
+      ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
     );
   }
 
-  Widget _buildCheckbox(String title, bool value, ValueChanged<bool?> onChanged) {
+  Widget _buildCheckbox(
+    String title,
+    bool value,
+    ValueChanged<bool?> onChanged,
+  ) {
     return CheckboxListTile(
       title: Text(title, style: GoogleFonts.outfit(fontSize: 14)),
       value: value,

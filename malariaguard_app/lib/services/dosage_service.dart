@@ -31,7 +31,9 @@ class DosageService {
   }) async {
     try {
       // 1. Load the protocol from assets
-      final String protocol = await rootBundle.loadString('assets/malaria_protocol.md');
+      final String protocol = await rootBundle.loadString(
+        'assets/malaria_protocol.md',
+      );
 
       // 2. Hardware/Availability Check
       if (!_isAvailable) {
@@ -39,7 +41,8 @@ class DosageService {
       }
 
       // 3. Prepare the prompt with System Instruction
-      final String prompt = """
+      final String prompt =
+          """
 SYSTEM INSTRUCTION:
 You are a medical assistant following the Ethiopian National Malaria Protocol. 
 Use the following protocol as your absolute source of truth:
@@ -57,15 +60,16 @@ Return the response in a clear, bulleted Markdown format.
 """;
 
       // 4. Generate with Timeout handling
-      final response = await _nano.generate(prompt: prompt).timeout(
-        const Duration(seconds: 15),
-        onTimeout: () => throw TimeoutException("Inference timed out"),
-      );
+      final response = await _nano
+          .generate(prompt: prompt)
+          .timeout(
+            const Duration(seconds: 15),
+            onTimeout: () => throw TimeoutException("Inference timed out"),
+          );
 
-      return response.isNotEmpty 
-          ? response.first 
+      return response.isNotEmpty
+          ? response.first
           : "Error: Model returned an empty recommendation. Switching to fallback...\n\n${_getFallbackDosage(name, weight, rdtResult)}";
-
     } catch (e) {
       return "⚠️ **Local AI Error:** Using safety fallback logic.\n\n${_getFallbackDosage(name, weight, rdtResult)}";
     }

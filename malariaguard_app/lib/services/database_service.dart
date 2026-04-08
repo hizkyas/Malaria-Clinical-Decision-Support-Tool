@@ -29,7 +29,11 @@ class DatabaseService {
 
   Future<void> saveDiagnosis(Map<String, dynamic> diagnosis) async {
     final db = await database;
-    await db.insert('diagnoses', diagnosis, conflictAlgorithm: ConflictAlgorithm.replace);
+    await db.insert(
+      'diagnoses',
+      diagnosis,
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 
   Future<List<Map<String, dynamic>>> fetchDiagnoses() async {

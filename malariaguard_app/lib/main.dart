@@ -29,9 +29,7 @@ class MalariaGuardApp extends StatelessWidget {
           surface: const Color(0xFFF5F7F8),
         ),
         scaffoldBackgroundColor: const Color(0xFFF5F7F8),
-        textTheme: GoogleFonts.interTextTheme(
-          Theme.of(context).textTheme,
-        ),
+        textTheme: GoogleFonts.interTextTheme(Theme.of(context).textTheme),
       ),
       initialRoute: '/',
       routes: {
