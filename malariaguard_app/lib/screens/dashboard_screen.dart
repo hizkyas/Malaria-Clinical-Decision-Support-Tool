@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:flutter_tts/flutter_tts.dart';
 import '../services/dosage_service.dart';
@@ -115,6 +115,7 @@ class _DashboardScreenState extends State<DashboardScreen>
           );
         } else {
           debugPrint("Speech recognition not available on this device.");
+          if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Speech recognition not available.")),
           );
@@ -130,9 +131,10 @@ class _DashboardScreenState extends State<DashboardScreen>
   }
 
   void _calculateDosage() async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
     final double? weight = double.tryParse(_weightController.text);
     if (weight == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         const SnackBar(content: Text("Please enter a valid weight.")),
       );
       return;
@@ -303,6 +305,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                     height: 56,
                     child: ElevatedButton(
                       onPressed: () async {
+                        final messenger = ScaffoldMessenger.of(context);
                         final result =
                             await Navigator.pushNamed(context, '/scan')
                                 as String?;
@@ -316,7 +319,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                             _calculateDosage();
                           }
                         } else if (result == "Invalid") {
-                          ScaffoldMessenger.of(context).showSnackBar(
+                          messenger.showSnackBar(
                             const SnackBar(
                               content: Text(
                                 "Scan Failed: Could not detect lines. Please try again.",
