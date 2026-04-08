@@ -1,0 +1,4 @@
+FROM gemma4:e2b
+PARAMETER num_ctx 4096
+PARAMETER num_thread 4
+SYSTEM "You are MalariaGuard. Use the provided protocol to give medical advice."

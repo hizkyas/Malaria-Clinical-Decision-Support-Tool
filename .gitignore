@@ -1,0 +1,28 @@
+# MalariaGuard Project Root .gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+.venv
+env/
+venv/
+build/
+dist/
+
+# Flutter (from subfolder)
+malariaguard_app/build/
+malariaguard_app/.dart_tool/
+malariaguard_app/.flutter-plugins
+malariaguard_app/.flutter-plugins-dependencies
+malariaguard_app/.pub-cache/
+malariaguard_app/.pub/
+
+# OS/IDEs
+.DS_Store
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr

@@ -1,0 +1,35 @@
+name: Quality Gate
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  analyze_and_test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: malariaguard_app
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.x'
+          channel: 'stable'
+          
+      - name: Install dependencies
+        run: flutter pub get
+        
+      - name: Check Format
+        run: flutter format --set-exit-if-changed .
+        
+      - name: Analyze Static Code
+        run: flutter analyze
+        
+      - name: Run Tests
+        run: flutter test
